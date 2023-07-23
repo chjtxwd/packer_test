@@ -8,12 +8,18 @@ packer {
 }
 variable "password" {
   type    = string
-  default = "demo"
 }
 
 variable "username" {
   type    = string
-  default = "root@pam"
+}
+
+variable "proxmox_url" {
+  type    = string
+}
+
+variable "ssh_password" {
+  type    = string
 }
 
 source "proxmox-iso" "fedora-kickstart" {
@@ -40,8 +46,8 @@ source "proxmox-iso" "fedora-kickstart" {
   }
   node                 = "pve"
   password             = "${var.password}"
-  proxmox_url          = "https://192.168.0.5:8006/api2/json"
-  ssh_password         = "demo"
+  proxmox_url          = "${var.proxmox_url}"
+  ssh_password         = "${var.ssh_password}"
   ssh_timeout          = "60m"
   ssh_username         = "root"
   template_description = "Fedora 38, generated on ${timestamp()}"
@@ -51,10 +57,10 @@ source "proxmox-iso" "fedora-kickstart" {
   qemu_agent           = true
 }
 
+
 build {
   sources = ["source.proxmox-iso.fedora-kickstart"]
   provisioner "shell" {
     inline = ["systemctl disable firewalld"]
   }
 }
-
